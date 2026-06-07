@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "设备信息",
+    "slug": "device-inspector",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "buildNumber": "1",
+      "bundleIdentifier": "com.miaoda.appc4634f8i5yip"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#EEF2FA"
+      },
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 1,
+      "package": "com.romhelp.mace",
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      "expo-sqlite",
+      "expo-font",
+      "expo-system-ui",
+      "expo-file-system"
+    ],
+    "router": {
+      "root": "src"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

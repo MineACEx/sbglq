@@ -1,0 +1,23 @@
+{
+  "extends": "miaoda-expo-devkit/tsconfig-base",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "nativewind-env.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "babel.config.js",
+    "metro.config.js",
+    "tailwind.config.js"
+  ]
+}

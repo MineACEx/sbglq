@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* iOS 26 液态玻璃 + 白色极简高对比度 */
+    --background: 230 18% 97%;
+    --foreground: 240 15% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 15% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 15% 4%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 14% 95%;
+    --secondary-foreground: 225 12% 16%;
+    --muted: 225 14% 95%;
+    --muted-foreground: 225 8% 34%;
+    --accent: 225 14% 93%;
+    --accent-foreground: 225 12% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 225 14% 88%;
+    --input: 225 14% 88%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
+  }
+}
