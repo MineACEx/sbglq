@@ -2,7 +2,7 @@
   "expo": {
     "name": "设备信息",
     "slug": "device-inspector",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -14,11 +14,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#EEF2FA"
+        "backgroundColor": "#F5F6FA"
       },
       "predictiveBackGestureEnabled": false,
       "versionCode": 1,
-      "package": "com.romhelp.mace",
+      "package": "com.romhelper.ace",
       "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
@@ -31,7 +31,18 @@
       "expo-sqlite",
       "expo-font",
       "expo-system-ui",
-      "expo-file-system"
+      "expo-file-system",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0",
+            "minSdkVersion": 24
+          }
+        }
+      ]
     ],
     "router": {
       "root": "src"
