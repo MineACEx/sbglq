@@ -1,6 +1,4 @@
-import * as Sentry from '@sentry/react-native';
 import { Stack } from 'expo-router';
-import { PortalHost } from '@rn-primitives/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
@@ -9,10 +7,6 @@ import React from 'react';
 
 import { ModeProvider } from '@/ctx/modeCtx';
 import '../global.css';
-
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-});
 
 /**
  * ColorOS / HyperOS / MIUI 适配：
@@ -56,10 +50,9 @@ const RootLayout: React.FC = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ModeProvider>
         <RootLayoutNav />
-        <PortalHost />
       </ModeProvider>
     </GestureHandlerRootView>
   );
 };
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;

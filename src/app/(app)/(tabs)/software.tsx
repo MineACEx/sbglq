@@ -1,24 +1,43 @@
-import React from 'react';
-import { ScrollView, View, Text, StyleSheet, Platform } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, View, Text, RefreshControl, StyleSheet, Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
-import { mockInstalledApps, mockRunningServices, mockBuildProps } from '@/lib/mockData';
 import { GLASS, RADIUS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
 import { InfoCard, InfoGroup } from '@/components/InfoCard';
 import { SectionHeader } from '@/components/SectionHeader';
 import { PermissionBanner } from '@/components/PermissionBanner';
+import { TabSkeleton } from '@/components/SkeletonLoader';
 
 export default function SoftwareScreen() {
   const { mode, setMode } = useMode();
+  const [loading, setLoading] = useState(true);
 
-  const g1 = useEnterAnimation(mode !== 'normal', 0);
-  const g2 = useEnterAnimation(mode !== 'normal', 60);
-  const g3 = useEnterAnimation(mode !== 'normal', 120);
-  const g4 = useEnterAnimation(mode !== 'normal', 180);
+  const load = useCallback(async () => {
+    setLoading(true);
+    // 模拟短暂加载以展示骨架屏
+    await new Promise((r) => setTimeout(r, 300));
+    setLoading(false);
+  }, []);
+
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+
+  const g1 = useEnterAnimation(!loading && mode !== 'normal', 0);
+  const g2 = useEnterAnimation(!loading && mode !== 'normal', 60);
+  const g3 = useEnterAnimation(!loading && mode !== 'normal', 120);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <ModeSwitcher mode={mode} onModeChange={setMode} />
+        <TabSkeleton />
+      </SafeAreaView>
+    );
+  }
 
   if (mode === 'normal') {
     return (
@@ -37,9 +56,6 @@ export default function SoftwareScreen() {
     );
   }
 
-  const systemApps = mockInstalledApps.filter((a) => a.isSystem);
-  const userApps = mockInstalledApps.filter((a) => !a.isSystem);
-
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ModeSwitcher mode={mode} onModeChange={setMode} />
@@ -47,6 +63,7 @@ export default function SoftwareScreen() {
         style={s.scroll}
         contentContainerStyle={s.content}
         contentInsetAdjustmentBehavior="automatic"
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={GLASS.shizuku} />}
         showsVerticalScrollIndicator={false}
       >
         {mode === 'shizuku' && <PermissionBanner mode="shizuku" />}
@@ -55,54 +72,38 @@ export default function SoftwareScreen() {
         <Animated.View style={g1}>
           <SectionHeader title="应用概览" />
           <InfoGroup>
-            <InfoCard label="系统应用" value={`${systemApps.length} 个`} />
-            <InfoCard label="用户应用" value={`${userApps.length} 个`} />
-            <InfoCard label="总计" value={`${mockInstalledApps.length} 个`} last />
+            <InfoCard label="系统应用" value="需要 Shizuku/Root 权限" locked />
+            <InfoCard label="用户应用" value="需要 Shizuku/Root 权限" locked />
+            <InfoCard label="总计" value="需要 Shizuku/Root 权限" locked last />
           </InfoGroup>
         </Animated.View>
 
         <Animated.View style={g2}>
-          <SectionHeader title="用户应用" count={userApps.length} />
+          <SectionHeader title="用户应用" />
           <InfoGroup>
-            {userApps.map((app, i) => (
-              <InfoCard key={`uapp-${i}`} label={app.name} value={app.version}
-                detail={`包名：${app.packageName}\n版本：${app.version}`}
-                last={i === userApps.length - 1} />
-            ))}
+            <InfoCard label="应用列表" value="需要连接 Shizuku/Root" locked detail="Expo 没有获取应用列表的 API，需要通过 Shizuku 或 Root 权限调用 PackageManager。" last />
+          </InfoGroup>
+        </Animated.View>
+
+        <Animated.View style={g2}>
+          <SectionHeader title="系统应用" />
+          <InfoGroup>
+            <InfoCard label="系统应用列表" value="需要连接 Shizuku/Root" locked detail="需要通过 Shizuku 或 Root 权限调用 PackageManager 获取系统应用列表。" last />
           </InfoGroup>
         </Animated.View>
 
         <Animated.View style={g3}>
-          <SectionHeader title="系统应用" count={systemApps.length} />
+          <SectionHeader title="运行中的服务" />
           <InfoGroup>
-            {systemApps.map((app, i) => (
-              <InfoCard key={`sapp-${i}`} label={app.name} value={app.version}
-                detail={`包名：${app.packageName}\n版本：${app.version}`}
-                last={i === systemApps.length - 1} />
-            ))}
-          </InfoGroup>
-        </Animated.View>
-
-        <Animated.View style={g3}>
-          <SectionHeader title="运行中的服务" count={mockRunningServices.length} />
-          <InfoGroup>
-            {mockRunningServices.map((svc, i) => (
-              <InfoCard key={`svc-${i}`} label={svc.name} value={svc.status}
-                detail={`PID：${svc.pid}\n状态：${svc.status}`}
-                last={i === mockRunningServices.length - 1} />
-            ))}
+            <InfoCard label="服务列表" value="需要 Shizuku/Root 权限" locked detail="需要通过 Shizuku 或 Root 权限执行 dumpsys activity services。" last />
           </InfoGroup>
         </Animated.View>
 
         {mode === 'root' && (
-          <Animated.View style={g4}>
-            <SectionHeader title="系统属性" count={mockBuildProps.length} />
+          <Animated.View style={g3}>
+            <SectionHeader title="系统属性" />
             <InfoGroup>
-              {mockBuildProps.map((prop, i) => (
-                <InfoCard key={`prop-${i}`} label={prop.key.split('.').pop() ?? prop.key}
-                  value={prop.value} detail={`键：${prop.key}\n值：${prop.value}`}
-                  last={i === mockBuildProps.length - 1} />
-              ))}
+              <InfoCard label="Build Props" value="需要 Root 权限" locked detail="需要通过 Root 权限执行 getprop 命令读取系统属性。" last />
             </InfoGroup>
           </Animated.View>
         )}

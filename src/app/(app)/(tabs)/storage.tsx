@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
 import { fetchStorageData } from '@/lib/deviceInfo';
-import { mockPartitions, mockMountPoints } from '@/lib/mockData';
 import { GLASS, RADIUS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
@@ -84,7 +83,6 @@ export default function StorageScreen() {
   const ready = !loading && !!data;
   const g1 = useEnterAnimation(ready, 0);
   const g2 = useEnterAnimation(ready, 60);
-  const g3 = useEnterAnimation(ready, 120);
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -113,29 +111,16 @@ export default function StorageScreen() {
           </Animated.View>
 
           {mode === 'root' ? (
-            <>
-              <Animated.View style={g2}>
-                <SectionHeader title="分区信息" count={mockPartitions.length} />
-                <InfoGroup>
-                  {mockPartitions.map((p, i) => (
-                    <InfoCard key={`part-${i}`} label={p.name} value={p.size}
-                      detail={`分区：${p.name}\n大小：${p.size}\n文件系统：${p.type}`}
-                      last={i === mockPartitions.length - 1} />
-                  ))}
-                </InfoGroup>
-              </Animated.View>
-
-              <Animated.View style={g3}>
-                <SectionHeader title="挂载点" count={mockMountPoints.length} />
-                <InfoGroup>
-                  {mockMountPoints.map((m, i) => (
-                    <InfoCard key={`mount-${i}`} label={m.mountPoint} value={m.fsType}
-                      detail={`设备：${m.device}\n挂载点：${m.mountPoint}\n文件系统：${m.fsType}`}
-                      last={i === mockMountPoints.length - 1} />
-                  ))}
-                </InfoGroup>
-              </Animated.View>
-            </>
+            <Animated.View style={g2}>
+              <SectionHeader title="分区信息" />
+              <InfoGroup>
+                <InfoCard label="分区详情" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /proc/partitions 或执行 cat /proc/mounts。" last />
+              </InfoGroup>
+              <SectionHeader title="挂载点" />
+              <InfoGroup>
+                <InfoCard label="挂载信息" value="需要 Root 权限" locked detail="需要通过 Root 权限执行 cat /proc/mounts。" last />
+              </InfoGroup>
+            </Animated.View>
           ) : (
             <Animated.View style={g2}>
               <SectionHeader title="分区信息" />

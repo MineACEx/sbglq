@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
 import { fetchOverviewData } from '@/lib/deviceInfo';
-import { mockKernelVersion, mockSelinuxStatus, mockAccountInfo } from '@/lib/mockData';
 import { GLASS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
@@ -67,7 +66,7 @@ export default function OverviewScreen() {
             <SectionHeader title="电池" />
             <InfoGroup>
               <InfoCard label="电量" value={`${data!.batteryLevel}%`} detail={`当前 ${data!.batteryLevel}%，${data!.isCharging ? '正在充电' : '未充电'}。`} />
-              <InfoCard label="充电状态" value={data!.isCharging ? '充电中 ⚡' : '未充电'} last />
+              <InfoCard label="充电状态" value={data!.isCharging ? '充电中' : '未充电'} last />
             </InfoGroup>
           </Animated.View>
 
@@ -75,8 +74,8 @@ export default function OverviewScreen() {
             <Animated.View style={g3}>
               <SectionHeader title="账户" />
               <InfoGroup>
-                <InfoCard label="Google 账户" value={`${mockAccountInfo.googleAccounts} 个`} />
-                <InfoCard label="总账户数" value={`${mockAccountInfo.totalAccounts} 个`} last />
+                <InfoCard label="Google 账户" value="需要 Shizuku/Root 权限" locked />
+                <InfoCard label="总账户数" value="需要 Shizuku/Root 权限" locked last />
               </InfoGroup>
             </Animated.View>
           )}
@@ -85,8 +84,8 @@ export default function OverviewScreen() {
             <Animated.View style={g4}>
               <SectionHeader title="内核" />
               <InfoGroup>
-                <InfoCard label="内核版本" value={mockKernelVersion.split(' ')[1] ?? mockKernelVersion} detail={mockKernelVersion} />
-                <InfoCard label="SELinux 状态" value={mockSelinuxStatus} detail="Enforcing = 强制执行安全策略，Permissive = 宽容模式。" last />
+                <InfoCard label="内核版本" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /proc/version。" />
+                <InfoCard label="SELinux 状态" value="需要 Root 权限" locked detail="需要通过 Root 权限执行 getenforce 命令。" last />
               </InfoGroup>
             </Animated.View>
           )}

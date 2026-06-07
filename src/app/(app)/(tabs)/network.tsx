@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
 import { fetchNetworkData } from '@/lib/deviceInfo';
-import { mockNetworkStats } from '@/lib/mockData';
 import { GLASS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
@@ -67,11 +66,11 @@ export default function NetworkScreen() {
             <Animated.View style={g2}>
               <SectionHeader title="网络统计" />
               <InfoGroup>
-                <InfoCard label="接收流量" value={mockNetworkStats.rxBytes}
-                  detail="自上次重置以来设备接收的总数据量。" />
-                <InfoCard label="发送流量" value={mockNetworkStats.txBytes}
-                  detail="自上次重置以来设备发送的总数据量。" />
-                <InfoCard label="活跃连接数" value={`${mockNetworkStats.connections} 个`} last />
+                <InfoCard label="接收流量" value="需要 Shizuku/Root 权限" locked
+                  detail="需要通过 Shizuku 或 Root 权限读取 /proc/net/dev。" />
+                <InfoCard label="发送流量" value="需要 Shizuku/Root 权限" locked
+                  detail="需要通过 Shizuku 或 Root 权限读取 /proc/net/dev。" />
+                <InfoCard label="活跃连接数" value="需要 Shizuku/Root 权限" locked last />
               </InfoGroup>
             </Animated.View>
           )}

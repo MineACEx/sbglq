@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
 import { fetchHardwareData } from '@/lib/deviceInfo';
-import { mockCpuFrequencies, mockCpuCoreCount, mockSensors } from '@/lib/mockData';
 import { GLASS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
@@ -55,7 +54,7 @@ export default function HardwareScreen() {
           <Animated.View style={g1}>
             <SectionHeader title="显示屏" />
             <InfoGroup>
-              <InfoCard label="物理分辨率" value={`${data!.screenWidth} × ${data!.screenHeight}`} detail="屏幕的实际像素分辨率（宽 × 高）。" />
+              <InfoCard label="物理分辨率" value={`${data!.screenWidth} x ${data!.screenHeight}`} detail="屏幕的实际像素分辨率（宽 x 高）。" />
               <InfoCard label="屏幕密度" value={`${data!.screenDensity} dpi`} detail="每英寸的像素点数，数值越高显示越细腻。" />
               <InfoCard label="刷新率" value={`${data!.screenRefreshRate} Hz`} detail="屏幕每秒刷新次数。高刷机型需 Root 读取。" last />
             </InfoGroup>
@@ -75,10 +74,8 @@ export default function HardwareScreen() {
               <InfoCard label="CPU 架构" value={data!.cpuAbi} detail="设备支持的 CPU 指令集，arm64-v8a 为 64 位 ARM 架构。" />
               {mode === 'root' ? (
                 <>
-                  <InfoCard label="核心数量" value={`${mockCpuCoreCount} 核`} />
-                  {mockCpuFrequencies.map((freq, i) => (
-                    <InfoCard key={`freq-${i}`} label={`频率组 ${i + 1}`} value={freq} last={i === mockCpuFrequencies.length - 1} />
-                  ))}
+                  <InfoCard label="核心数量" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /sys/devices/system/cpu。" />
+                  <InfoCard label="CPU 频率" value="需要 Root 权限" locked last detail="需要通过 Root 权限读取 /sys/devices/system/cpu/cpu0/cpufreq。" />
                 </>
               ) : (
                 <>
@@ -90,12 +87,10 @@ export default function HardwareScreen() {
           </Animated.View>
 
           <Animated.View style={g4}>
-            <SectionHeader title="传感器" count={mode === 'root' ? mockSensors.length : undefined} />
+            <SectionHeader title="传感器" />
             <InfoGroup>
               {mode === 'root' ? (
-                mockSensors.map((sensor, i) => (
-                  <InfoCard key={`sensor-${i}`} label={sensor.name} value={sensor.vendor} detail={`类型：${sensor.type}\n厂商：${sensor.vendor}`} last={i === mockSensors.length - 1} />
-                ))
+                <InfoCard label="传感器列表" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /sys/class/sensors 或调用 SensorService。" last />
               ) : (
                 <InfoCard label="传感器列表" value="需要 Root 权限" locked last />
               )}

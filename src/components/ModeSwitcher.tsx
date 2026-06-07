@@ -111,11 +111,13 @@ const s = StyleSheet.create({
     borderRadius: TAB_R,
     borderCurve: 'continuous',
     backgroundColor: 'rgba(255,255,255,0.92)',
+    zIndex: 1,
   },
   activeRefraction: {
     borderRadius: TAB_R,
     borderCurve: 'continuous',
     backgroundColor: 'rgba(228,238,255,0.18)',
+    zIndex: 2,
   },
   activeHighlight: {
     position: 'absolute',
