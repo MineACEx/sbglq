@@ -1,5 +1,5 @@
 {
-	"extends": ["miaoda-expo-devkit/biome"],
+	"$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
 	"files": {
 		"includes": ["src/**/*.{js,jsx,ts,tsx}"]
 	}
