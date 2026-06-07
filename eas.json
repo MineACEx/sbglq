@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 16.0.0",
-    "appVersionSource": "local"
+    "appVersionSource": "local",
+    "projectId": "49e3d86e-052a-4203-8930-2138118207c7"
   },
   "build": {
     "development": {
