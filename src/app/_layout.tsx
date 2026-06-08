@@ -2,10 +2,12 @@ import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View, Platform } from 'react-native';
+import { ActivityIndicator, View, Platform, StyleSheet } from 'react-native';
 import React from 'react';
+import { BlurView } from 'expo-blur';
 
 import { ModeProvider } from '@/ctx/modeCtx';
+import { GLASS } from '@/lib/design';
 import '../global.css';
 
 /**
@@ -31,17 +33,28 @@ function RootLayoutNav() {
   }
 
   return (
-    <>
-      <StatusBar
-        style="dark"
-        backgroundColor={STATUS_BAR_BG}
-        translucent={Platform.OS === 'android'}
+    <View style={ls.root}>
+      {/* 底层渐变背景 */}
+      <View style={ls.bgGradient} pointerEvents="none" />
+      {/* 全局高斯模糊层 */}
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        intensity={Platform.OS === 'ios' ? 40 : 0}
+        tint="extraLight"
       />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(app)" />
-      </Stack>
-    </>
+      {/* 内容层 */}
+      <View style={StyleSheet.absoluteFill}>
+        <StatusBar
+          style="dark"
+          backgroundColor={STATUS_BAR_BG}
+          translucent={Platform.OS === 'android'}
+        />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(app)" />
+        </Stack>
+      </View>
+    </View>
   );
 }
 
@@ -56,3 +69,15 @@ const RootLayout: React.FC = () => {
 };
 
 export default RootLayout;
+
+const ls = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: GLASS.bgTop,
+  },
+  bgGradient: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: GLASS.bgGradientStart,
+    // 使用多层半透明叠加模拟渐变
+  },
+});

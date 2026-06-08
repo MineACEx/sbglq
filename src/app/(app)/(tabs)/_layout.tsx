@@ -1,8 +1,9 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { GLASS } from '@/lib/design';
+import { BlurView } from 'expo-blur';
+import { GLASS, BLUR_INTENSITY } from '@/lib/design';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -20,24 +21,37 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: GLASS.shizuku,
-        tabBarInactiveTintColor: '#a0a0ab',     // 对比度提升：从 aeaeb2 → a0a0ab
+        tabBarInactiveTintColor: '#a0a0ab',
         tabBarStyle: {
           position: 'absolute',
-          // 液态玻璃底栏：顶部高光描边模拟折射边缘
-          backgroundColor: Platform.OS === 'ios' ? 'rgba(248,249,252,0.88)' : GLASS.barBg,
+          backgroundColor: Platform.OS === 'ios'
+            ? 'rgba(248,249,252,0.82)'
+            : GLASS.barBg,
           borderTopWidth: 0.8,
           borderTopColor: Platform.OS === 'ios'
-            ? 'rgba(255,255,255,0.80)'          // iOS：亮白高光边（折射顶面）
-            : 'rgba(200,208,224,0.40)',          // Android：浅蓝灰描边
+            ? 'rgba(255,255,255,0.85)'
+            : 'rgba(200,208,224,0.40)',
           height: Platform.OS === 'android' ? 64 : 82,
           paddingBottom: Platform.OS === 'android' ? 10 : 22,
           paddingTop: 8,
           elevation: 0,
         },
+        tabBarBackground: () => {
+          if (Platform.OS === 'ios') {
+            return (
+              <BlurView
+                intensity={BLUR_INTENSITY.bar}
+                tint="extraLight"
+                style={StyleSheet.absoluteFill}
+              />
+            );
+          }
+          return null;
+        },
         tabBarLabelStyle: {
           fontFamily: 'Glow Sans SC',
           fontSize: 10,
-          fontWeight: '500',                    // 对比度：从 400 → 500
+          fontWeight: '500',
         },
       }}
     >

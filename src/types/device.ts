@@ -17,6 +17,13 @@ export interface InfoSection {
   items: InfoItem[];
 }
 
+// Root 权限状态
+export interface RootStatus {
+  rootAvailable: boolean;
+  shizukuAvailable: boolean;
+  rootMethod: string;
+}
+
 // 各 Tab 数据
 export interface OverviewData {
   brand: string;
@@ -29,6 +36,7 @@ export interface OverviewData {
   kernelVersion?: string;
   selinuxStatus?: string;
   accountCount?: number;
+  accountInfo?: { total: number; google: number };
 }
 
 export interface HardwareData {

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMode } from '@/ctx/modeCtx';
 import { fetchStorageData } from '@/lib/deviceInfo';
+import { fetchRootStorageData, checkRootStatus } from '@/lib/rootDeviceInfo';
 import { GLASS, RADIUS } from '@/lib/design';
 import { useEnterAnimation } from '@/lib/useEnterAnimation';
 import { ModeSwitcher } from '@/components/ModeSwitcher';
@@ -13,7 +14,7 @@ import { InfoCard, InfoGroup } from '@/components/InfoCard';
 import { SectionHeader } from '@/components/SectionHeader';
 import { PermissionBanner } from '@/components/PermissionBanner';
 import { TabSkeleton } from '@/components/SkeletonLoader';
-import type { StorageData } from '@/types/device';
+import type { StorageData, RootStatus } from '@/types/device';
 
 /** 液态玻璃存储进度条 */
 function StorageBar({ percent, used, total }: { percent: number; used: string; total: string }) {
@@ -69,20 +70,48 @@ const b = StyleSheet.create({
 export default function StorageScreen() {
   const { mode, setMode } = useMode();
   const [data, setData] = useState<StorageData | null>(null);
+  const [rootStorageData, setRootStorageData] = useState<Partial<StorageData> | null>(null);
+  const [rootStatus, setRootStatus] = useState<RootStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const d = await fetchStorageData();
-    setData(d);
+    try {
+      const baseData = await fetchStorageData();
+      setData(baseData);
+
+      if (mode !== 'normal') {
+        const status = await checkRootStatus();
+        setRootStatus(status);
+        if ((mode === 'root' && status.rootAvailable) || (mode === 'shizuku' && status.shizukuAvailable)) {
+          const rData = await fetchRootStorageData();
+          setRootStorageData(rData);
+        } else {
+          setRootStorageData(null);
+        }
+      } else {
+        setRootStatus(null);
+        setRootStorageData(null);
+      }
+    } catch {
+      // 静默处理
+    }
     setLoading(false);
-  }, []);
+  }, [mode]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const ready = !loading && !!data;
   const g1 = useEnterAnimation(ready, 0);
   const g2 = useEnterAnimation(ready, 60);
+
+  const isPermissionConnected =
+    mode === 'root'
+      ? rootStatus?.rootAvailable === true
+      : rootStatus?.shizukuAvailable === true;
+
+  const partitions = rootStorageData?.partitions ?? [];
+  const mountPoints = rootStorageData?.mountPoints ?? [];
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -97,8 +126,8 @@ export default function StorageScreen() {
           refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={GLASS.shizuku} />}
           showsVerticalScrollIndicator={false}
         >
-          {mode === 'shizuku' && <PermissionBanner mode="shizuku" />}
-          {mode === 'root' && <PermissionBanner mode="root" />}
+          {mode === 'shizuku' && <PermissionBanner mode="shizuku" rootStatus={rootStatus ?? undefined} />}
+          {mode === 'root' && <PermissionBanner mode="root" rootStatus={rootStatus ?? undefined} />}
 
           <Animated.View style={g1}>
             <SectionHeader title="内部存储" />
@@ -110,26 +139,38 @@ export default function StorageScreen() {
             </InfoGroup>
           </Animated.View>
 
-          {mode === 'root' ? (
+          {(mode === 'shizuku' || mode === 'root') && (
             <Animated.View style={g2}>
-              <SectionHeader title="分区信息" />
+              <SectionHeader title="分区信息" count={partitions.length} />
               <InfoGroup>
-                <InfoCard label="分区详情" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /proc/partitions 或执行 cat /proc/mounts。" last />
+                {isPermissionConnected && partitions.length > 0 ? (
+                  partitions.map((part, i) => (
+                    <InfoCard
+                      key={part.name}
+                      label={part.name}
+                      value={`${part.size} (${part.type})`}
+                      last={i === partitions.length - 1}
+                    />
+                  ))
+                ) : (
+                  <InfoCard label="分区详情" value="需要 Root 权限" locked detail="需要通过 Root 权限读取 /proc/partitions。" last />
+                )}
               </InfoGroup>
-              <SectionHeader title="挂载点" />
+
+              <SectionHeader title="挂载点" count={mountPoints.length} />
               <InfoGroup>
-                <InfoCard label="挂载信息" value="需要 Root 权限" locked detail="需要通过 Root 权限执行 cat /proc/mounts。" last />
-              </InfoGroup>
-            </Animated.View>
-          ) : (
-            <Animated.View style={g2}>
-              <SectionHeader title="分区信息" />
-              <InfoGroup>
-                <InfoCard label="分区详情" value="需要 Root 权限" locked last />
-              </InfoGroup>
-              <SectionHeader title="挂载点" />
-              <InfoGroup>
-                <InfoCard label="挂载信息" value="需要 Root 权限" locked last />
+                {isPermissionConnected && mountPoints.length > 0 ? (
+                  mountPoints.map((mp, i) => (
+                    <InfoCard
+                      key={mp.mountPoint}
+                      label={mp.mountPoint}
+                      value={`${mp.device} (${mp.fsType})`}
+                      last={i === mountPoints.length - 1}
+                    />
+                  ))
+                ) : (
+                  <InfoCard label="挂载信息" value="需要 Root 权限" locked detail="需要通过 Root 权限执行 cat /proc/mounts。" last />
+                )}
               </InfoGroup>
             </Animated.View>
           )}

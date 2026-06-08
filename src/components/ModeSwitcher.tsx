@@ -52,6 +52,7 @@ export const ModeSwitcher: React.FC<ModeSwitcherProps> = ({ mode, onModeChange }
                 )}
                 <Text
                   allowFontScaling={false}
+                  numberOfLines={1}
                   style={[s.label, { color: active ? m.activeColor : GLASS.textDisabled }]}
                 >
                   {m.label}
@@ -69,7 +70,11 @@ const TRACK_R = RADIUS.lg;
 const TAB_R = RADIUS.md;
 
 const s = StyleSheet.create({
-  wrapper: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 },
+  wrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
   track: {
     flexDirection: 'row',
     borderRadius: TRACK_R,
@@ -80,8 +85,11 @@ const s = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'rgba(120,120,128,0.16)',
     position: 'relative',
+    height: 52,
   },
-  androidTrack: { backgroundColor: 'rgba(238,240,248,0.90)' },
+  androidTrack: {
+    backgroundColor: 'rgba(238,240,248,0.90)',
+  },
   trackRefraction: {
     borderRadius: TRACK_R,
     backgroundColor: 'rgba(220,230,255,0.08)',
@@ -95,11 +103,13 @@ const s = StyleSheet.create({
     borderTopRightRadius: TRACK_R,
     zIndex: 10,
   },
-  tabWrap: { flex: 1 },
+  tabWrap: {
+    flex: 1,
+  },
   tab: {
     flex: 1,
-    paddingVertical: 7,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: TAB_R,
     borderCurve: 'continuous',
     overflow: 'hidden',
@@ -140,6 +150,7 @@ const s = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     position: 'relative',
-    zIndex: 20,
+    zIndex: 30,
+    textAlign: 'center',
   },
 });

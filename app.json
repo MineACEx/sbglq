@@ -43,7 +43,8 @@
             "abiFilters": ["armeabi-v7a", "arm64-v8a"]
           }
         }
-      ]
+      ],
+      "./plugins/withShellPlugin"
     ],
     "router": {
       "root": "src"

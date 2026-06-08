@@ -1,3 +1,13 @@
+/**
+ * deviceInfo — 普通模式设备数据获取
+ *
+ * 使用 Expo 官方 API 获取不需要特殊权限的设备信息。
+ * - expo-device: 品牌、型号、内存
+ * - expo-battery: 电量、充电状态
+ * - expo-network: WiFi、蜂窝、IP、SSID
+ * - expo-file-system: 存储空间
+ * - React Native Platform: Android 版本、SDK 版本
+ */
 import * as Device from 'expo-device';
 import * as Network from 'expo-network';
 import * as Battery from 'expo-battery';
@@ -67,7 +77,6 @@ export async function fetchHardwareData(): Promise<HardwareData> {
   let availRamStr = '需要权限';
   try {
     if (Platform.OS === 'android') {
-      // 尝试 expo-device 的 DeviceInfo native module
       const DeviceInfo = NativeModules.DeviceInfo;
       if (DeviceInfo?.getFreeMemory) {
         const freeMem = await DeviceInfo.getFreeMemory();
@@ -84,8 +93,9 @@ export async function fetchHardwareData(): Promise<HardwareData> {
   let refreshRate = 60;
   try {
     if (Platform.OS === 'android') {
-      const DisplayMetrics = NativeModules.DisplayMetrics
-        ?? NativeModules.UIManager?.getConstants?.DisplayMetrics;
+      const DisplayMetrics =
+        NativeModules.DisplayMetrics ??
+        NativeModules.UIManager?.getConstants?.DisplayMetrics;
       if (DisplayMetrics?.refreshRate) {
         refreshRate = Math.round(DisplayMetrics.refreshRate);
       }
@@ -113,7 +123,6 @@ export async function fetchNetworkData(): Promise<NetworkData> {
   // WiFi SSID：expo-network 的 NetworkState 包含 ssid 字段（需要 LOCATION 权限）
   let wifiSsid: string | undefined;
   if (state?.isConnected && state?.type === Network.NetworkStateType.WIFI) {
-    // NetworkState 中可能包含 ssid 字段
     wifiSsid = (state as Record<string, unknown>).ssid as string | undefined;
     if (!wifiSsid || wifiSsid === '<unknown ssid>') {
       wifiSsid = '需要位置权限';

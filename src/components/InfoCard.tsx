@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Clipboard from 'expo-clipboard';
 import { ChevronDown, Copy, Check } from 'lucide-react-native';
-import { GLASS, RADIUS } from '@/lib/design';
+import { GLASS, RADIUS, BLUR_INTENSITY } from '@/lib/design';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 
 interface InfoCardProps {
@@ -116,18 +116,20 @@ export const InfoCard: React.FC<InfoCardProps> = ({
   );
 };
 
-/** 液态玻璃信息分组容器 */
+/** 液态玻璃信息分组容器 — 增强折射效果 */
 export const InfoGroup: React.FC<{ children: React.ReactNode; style?: object }> = ({
   children,
   style,
 }) => (
   <View style={[g.wrap, style]}>
-    {/* 折射色层 */}
+    {/* 折射色层 — 增强透明度 */}
     <View style={[StyleSheet.absoluteFill, g.refraction]} pointerEvents="none" />
     {/* 顶部高光条 */}
     <View style={g.highlight} pointerEvents="none" />
     {/* 外描边（棱镜边缘） */}
     <View style={[StyleSheet.absoluteFill, g.border]} pointerEvents="none" />
+    {/* 内侧细线 — 玻璃厚度感 */}
+    <View style={[StyleSheet.absoluteFill, g.innerBorder]} pointerEvents="none" />
     {/* 内容 */}
     <View style={g.content}>{children}</View>
   </View>
@@ -209,6 +211,14 @@ const g = StyleSheet.create({
     borderWidth: 0.8,
     borderColor: GLASS.borderOuter,
     zIndex: 20,
+  },
+  innerBorder: {
+    borderRadius: CARD_RADIUS,
+    borderCurve: 'continuous',
+    borderWidth: 0.5,
+    borderColor: GLASS.borderInner,
+    zIndex: 19,
+    margin: 1.5,
   },
   content: {
     position: 'relative',
