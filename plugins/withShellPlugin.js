@@ -21,14 +21,15 @@ const path = require('path');
 const NATIVE_SHELL_MODULE_KT = `package com.romhelper.ace
 
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.Arguments
 
 class NativeShellModule(reactContext: ReactApplicationContext) :
-    NativeShellSpec(reactContext) {
+    ReactContextBaseJavaModule(reactContext) {
 
-    override fun getName() = "NativeShell"
+    override fun getName(): String = "NativeShell"
 
     @ReactMethod
     fun runCommand(command: String, useRoot: Boolean, promise: Promise) {
@@ -104,7 +105,7 @@ class NativeShellModule(reactContext: ReactApplicationContext) :
         Thread {
             try {
                 val shizukuCheck = Runtime.getRuntime().exec(
-                    arrayOf("sh", "-c", "cat /proc/$(pidof shizuku_server)/status 2>/dev/null || echo 'not_found'")
+                    arrayOf("sh", "-c", "cat /proc/\$(pidof shizuku_server)/status 2>/dev/null || echo 'not_found'")
                 )
                 val shizukuOut = shizukuCheck.inputStream.bufferedReader().readText().trim()
                 promise.resolve(shizukuOut != "not_found" && shizukuOut.isNotEmpty())
@@ -125,27 +126,13 @@ import com.facebook.react.uimanager.ViewManager
 
 class NativeShellPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(NativeShellModule(reactContext))
+        return mutableListOf<NativeModule>().apply {
+            add(NativeShellModule(reactContext))
+        }
     }
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
         return emptyList()
     }
-}
-`;
-
-const NATIVE_SHELL_SPEC_KT = `package com.romhelper.ace
-
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.Promise
-import com.facebook.react.turbomodule.core.interfaces.TurboModule
-
-abstract class NativeShellSpec(reactContext: ReactApplicationContext) :
-    TurboModule(reactContext) {
-
-    abstract fun runCommand(command: String, useRoot: Boolean, promise: Promise)
-    abstract fun detectRootMethod(promise: Promise)
-    abstract fun isRootAvailable(promise: Promise)
-    abstract fun isShizukuAvailable(promise: Promise)
 }
 `;
 
@@ -180,7 +167,11 @@ function withKotlinSources(config) {
 
     writeFileSafe(path.join(javaDir, 'NativeShellModule.kt'), NATIVE_SHELL_MODULE_KT);
     writeFileSafe(path.join(javaDir, 'NativeShellPackage.kt'), NATIVE_SHELL_PACKAGE_KT);
-    writeFileSafe(path.join(javaDir, 'NativeShellSpec.kt'), NATIVE_SHELL_SPEC_KT);
+    // Remove old NativeShellSpec.kt if exists (no longer needed)
+    const specPath = path.join(javaDir, 'NativeShellSpec.kt');
+    if (fs.existsSync(specPath)) {
+      fs.unlinkSync(specPath);
+    }
 
     return config;
   }]);
